@@ -6,6 +6,12 @@ pipeline{
         checkout scm
       }
     }
+    stage('Check Python') {
+    steps {
+        bat 'python --version'
+        bat 'where python'
+      }
+  }
     stage('Build'){
       steps{
         echo 'Checking Python Application'
