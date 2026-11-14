@@ -1,41 +1,51 @@
-pipeline{
-  agent any
-  stages{
-    stage('Checkout'){
-      steps{
-        checkout scm
-      }
+
+pipeline {
+    agent any
+
+    environment {
+        PYTHON = 'C:\\Users\\student\\AppData\\Local\\Python\\bin\\python.exe'
     }
-    stage('Check Python') {
-    steps {
-        bat 'python --version'
-        bat 'where python'
-      }
-  }
-    stage('Build'){
-      steps{
-        echo 'Checking Python Application'
-        bat 'python -m py_compile app.py'
-      }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Check Python') {
+            steps {
+                bat '"%PYTHON%" --version'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Checking Python Application'
+                bat '"%PYTHON%" -m py_compile app.py'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Executing automated tests'
+                bat '"%PYTHON%" -m unittest app'
+            }
+        }
+
+        stage('Run Application') {
+            steps {
+                bat '"%PYTHON%" app.py'
+            }
+        }
     }
-    stage('Test'){
-      steps{
-        echo 'Executing automated tests'
-        bat 'python -m unittest app'
-      }
+
+    post {
+        success {
+            echo 'CI Pipeline completed successfully'
+        }
+        failure {
+            echo 'CI Pipeline failed'
+        }
     }
-    stage('Run Application'){
-      steps{
-        bat 'python app.py'
-      }
-    }
-  }
-  post{
-    success{
-      echo 'CI Pipeline completed successfully'
-    }
-    failure{
-      echo 'CI Pipeline failed'
-    }
-  }
 }
